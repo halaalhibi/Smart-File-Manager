@@ -19,3 +19,21 @@ def remove(path) -> bool:
 def rename(path, new_name) -> bool:
     #it should handle if the file it's trying to renmae is there
     pass
+
+RULES = {
+    "archive": archive,
+    "move": move,
+    "remove": remove,
+    "rename": rename,
+}
+
+def run_action (path, rules):
+    if rules.get("action") == "rename":
+        pass
+    elif rules.get("action") == "archive":
+        pass
+    elif rules.get("action") == "move":
+        pass
+    elif rules.get("action") == "remove":
+        pass
+
