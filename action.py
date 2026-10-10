@@ -25,19 +25,28 @@ def archive_action(source, destination, format: str = "zip") -> bool:
 #move() will move a file from it's orignial palce
 def move_action(path, destination) -> bool:
     #it should check if the destination file name is there, if it's there it should handle duplication
-    shutil.move(path, destination)
-    pass
+    try:
+        shutil.move(path, destination)
+        return True
+    except:
+        return False
 
 #remove() will remove the file
 def remove_action(path) -> bool:
-    shutil.rmtree(path)
-    pass
+    try:
+        shutil.rmtree(path)
+        return True
+    except:
+        return False
 
 #rename() will rename a file from
 def rename_action(path, new_name) -> bool:
     #it should handle if the file it's trying to renmae is there
-    
-    pass
+    try:
+        Path(path).rename(new_name)
+        return True
+    except:
+        return False
 
 
 def run_action (path, rules):
