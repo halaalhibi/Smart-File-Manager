@@ -1,34 +1,22 @@
-import json
+# those functions will take a path and apply the metric to the file
+# it will return a true ---> match, or false ---> doesn't match
 
-#"action" should equal one of those in the given JSON.
-actions = ["move", "archive", "rename", "remove"]
-#"when" should equal one of those in the given JSON or multiple.
-filter  = ["url", "extension","size_mb", "age_days", "name"]
-#"format" should equal one of those in the give JSON.
-formats = ["zip", "tar"]
-#those are the required fields
-required = ["when", "action"]
 
-# validate JSON, if something in the JSON outside of the desired structure return false.
-# look at example.json to understand
-def validate_json(json_file) -> bool:
+
+def extension_filter(path, extension) -> bool:
     pass
 
-# those functions will take where to search and the metric to the filter
-# it will return a list to the valid path
-
-
-def extension_filter(source_path, extension) -> list:
+def get_origin_url(path: str) -> str:
     pass
 
-def url_filter(source_path, url) -> list:
+def url_filter(path, url) -> bool:
     pass
 
-def size_filter(source_path, size: int) -> list:
+def size_filter(path, size: int) -> bool:
     pass
 
-def age_days_filter(source_path, age) -> list:
+def age_days_filter(path, age) -> bool:
     pass
 
-def name_filter(source_path, name) -> list:
+def name_filter(path, name) -> bool:
     pass
