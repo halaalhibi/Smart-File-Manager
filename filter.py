@@ -1,15 +1,41 @@
 # those functions will take a path and apply the metric to the file
 # it will return a true ---> match, or false ---> doesn't match
-
+import platform
 
 def extension_filter(path, extension) -> bool:
-    pass
+    if path.endswith(extension):
+        return True
+    else:
+        return False
 
 def get_origin_url(path: str) -> str:
-    pass
+    os_type = platform.system()
+    # tested it works
+    if os_type == "Windows":
+        try:
+            with open(paht + ":Zone.Identifier") as file:
+                url = file.read()
+            return (url.split()[2].split("=")[1].split("\x00")[0])
+        except FileNotFoundError:
+            return None
+    #only theoritical
+    elif os_type == "Darwin":
+        out = subprocess.run(
+            ["xattr", "-px", "com.apple.metadata:kMDItemWhereFroms", path],
+            capture_output=True, text=True, check=True,
+        ).stdout
+    #linux
+    else:
+        return os.getxattr(path,"user.xdg.origin.url")
+
 
 def url_filter(path, url) -> bool:
-    pass
+    file_url = get_origin_url(path)
+    if file_url.contains(url):
+        return True
+    else:
+        return False
+
 
 def size_filter(path, size: int) -> bool:
     pass

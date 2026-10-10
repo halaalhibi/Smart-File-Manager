@@ -1,24 +1,42 @@
 import shutil
-import pathlib
+from pathlib import Path
+from datetime import datetime
 
-#archive() will archive file, remove the old one, and move it to the destination
+
+#archive() will archive directory containing files, remove the old one, and move it to the destination
 #it will
-def archive_action(path, destination, format: str = "zip") -> bool:
+def archive_action(source, destination, format: str = "zip") -> bool:
     #it should support multiple format, if the format is not in a supported list return false
-    pass
+    now = datetime.now()
+    archive_name = now.strftime("%d-%b-%Y")
+    try:
+        archive_path = shutil.make_archive(archive_name, format, source)
+        destination_path = Path(destination)
+        if not destination_path.exists():
+            destination_path.mkdir()
+        else:
+            if not destination_path.is_dir():
+                destination_path.mkdir()
+        shutil.move(archive_path, destination / f"{archive_name}.{format}")
+        return True
+    except:
+        return False
 
 #move() will move a file from it's orignial palce
 def move_action(path, destination) -> bool:
     #it should check if the destination file name is there, if it's there it should handle duplication
+    shutil.move(path, destination)
     pass
 
 #remove() will remove the file
 def remove_action(path) -> bool:
+    shutil.rmtree(path)
     pass
 
 #rename() will rename a file from
 def rename_action(path, new_name) -> bool:
     #it should handle if the file it's trying to renmae is there
+    
     pass
 
 
