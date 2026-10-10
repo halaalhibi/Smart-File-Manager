@@ -1,0 +1,29 @@
+{
+  "rules": [
+    {
+      "when": { "url": "example.com", "extension": ["pdf"] },
+      "action": "move",
+      "dest": "Work/Example"
+    },
+    {
+      "when": { "name": "Screenshot*", "age_days": { "greater_than": 30 } },
+      "action": "archive",
+      "dest": "Archive",
+      "format": "zip"
+    },
+    {
+      "when": { "size_mb": { "greater_than": 500 } },
+      "action": "move",
+      "dest": "Large"
+    },
+    {
+      "when": { "extension": ["tmp", "part"] },
+      "action": "remove"
+    },
+    {
+      "when": { "name": "IMG_*" },
+      "action": "rename",
+      "format": "{date}_{name}.{extension}"
+    }
+  ]
+}
