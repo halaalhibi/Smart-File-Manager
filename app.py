@@ -1,13 +1,16 @@
 # Download Manager CLI Python Script
 # Give config + watch folder
 import argparse
-import filter
+import matchers
 import action
 import config
+from pathlib import Path
+import sys
+import os
 
 
 #this function will scan all the files in the base_dir and will skip the destination files
-def scan(base_dir: str, recursive: bool, skip_dir: list[str]) -> list[str]:
+def scan(base_dir: str, recursive: bool, skip_dir: str) -> list[str]:
     pass
 
 # here the main logic will be
@@ -17,7 +20,13 @@ def main():
     p.add_argument("--config", required=True, help="path to the rules JSON")
     p.add_argument("--recursive", action="store_true")
     p.add_argument("--verbose", action="store_true")
-    p.parse_args()
+    args = p.parse_args()
+    config_file = Path(args.config)
+    ok, json_error = config.validate_json(config_file)
+    if not ok:
+        sys.exit(json_error)
+
+
 
 
 if __name__ == "__main__":

@@ -4,16 +4,13 @@ from pathlib import Path
 import fnmatch
 
 
-def extension_filter(path, extension) -> bool:
-    """Filters by file extension (supports single extension, set, or list)."""
-    if not extension:
-        return False
+def extension_filter(path: str, extensions: list[str]) -> bool:
+    """True if the file's extension is in the list (case-insensitive, no dot)."""
     file_ext = Path(path).suffix.lstrip(".").lower()
-    
-    if isinstance(extension, (list, tuple, set)):
-        return file_ext in [str(ext).lstrip(".").lower() for ext in extension]
-    return file_ext == str(extension).lstrip(".").lower()
-
+    for ext in extensions:
+        if file_ext == ext.lstrip(".").lower():
+            return True
+    return False
 
 # this function will get the origin url supporting Windows, Linux, MacOS
 def get_origin_url(path: str) -> str:
@@ -21,7 +18,7 @@ def get_origin_url(path: str) -> str:
     # tested it works
     if os_type == "Windows":
         try:
-            with open(paht + ":Zone.Identifier") as file:
+            with open(path + ":Zone.Identifier") as file:
                 url = file.read()
             return (url.split()[2].split("=")[1].split("\x00")[0])
         except FileNotFoundError:
@@ -34,17 +31,21 @@ def get_origin_url(path: str) -> str:
         ).stdout
     #linux
     else:
-        return os.getxattr(path,"user.xdg.origin.url")
+        try:
+            return os.getxattr(path,"user.xdg.origin.url").decode("utf-8")
+        except:
+            return None
 
 
 # check if that file contains the URL
 def url_filter(path, url) -> bool:
     file_url = get_origin_url(path)
-    if file_url.contains(url):
+    if file_url is None:
+        return False
+    if url in file_url:
         return True
     else:
         return False
-
 
 
 def _parse_size_in_mb(val):
