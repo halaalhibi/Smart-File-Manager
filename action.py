@@ -3,29 +3,41 @@ from pathlib import Path
 from datetime import datetime
 
 
-#archive() will archive directory containing files, remove the old one, and move it to the destination
-#it will
+#archive() will archive directory containing files,and move it to the destination
+# TODO: Make handle if the file avialabe in destination then change the name.
 def archive_action(source, destination, format: str = "zip") -> bool:
-    #it should support multiple format, if the format is not in a supported list return false
+    #get the date and format it as string
     now = datetime.now()
     archive_name = now.strftime("%d-%b-%Y")
+
     try:
+        #make the archive
         archive_path = shutil.make_archive(archive_name, format, source)
+        destination_path = Path(destination)
+        #check that the destination file is a directory
+        if not destination_path.exists():
+            destination_path.mkdir()
+        else:
+            if not destination_path.is_dir():
+                destination_path.mkdir()
+        #move it with the new format
+        shutil.move(archive_path, destination / f"{archive_name}.{format}")
+        return True
+    except:
+        return False
+
+
+#move() will move a file from it's orignial palce
+# TODO: Try improve this to handle if the file in the destination directory
+def move_action(path, destination) -> bool:
+    #basic just try to move
+    try:
         destination_path = Path(destination)
         if not destination_path.exists():
             destination_path.mkdir()
         else:
             if not destination_path.is_dir():
                 destination_path.mkdir()
-        shutil.move(archive_path, destination / f"{archive_name}.{format}")
-        return True
-    except:
-        return False
-
-#move() will move a file from it's orignial palce
-def move_action(path, destination) -> bool:
-    #it should check if the destination file name is there, if it's there it should handle duplication
-    try:
         shutil.move(path, destination)
         return True
     except:
@@ -33,8 +45,9 @@ def move_action(path, destination) -> bool:
 
 #remove() will remove the file
 def remove_action(path) -> bool:
+    #basic just remove the file
     try:
-        shutil.rmtree(path)
+        os.remove(path)
         return True
     except:
         return False
@@ -48,20 +61,15 @@ def rename_action(path, new_name) -> bool:
     except:
         return False
 
-
+# this function is responsible for running the action
+# TODO: Fix rename to make it work with the resulted format, probably make a function for that
 def run_action (path, rules):
     destination = ""
-    action = rule.get("action")
+    action = rules.get("action")
     if action in ["move", "archive"]:
-        if rule.get("destination") is None:
-            return False
-        else:
-            destination = Path(rule.get("destination"))
+        destination = Path(rules.get("dest"))
     if action == "rename":
-        if rule.get("format") is None:
-            return False
-        else:
-            return rename_action(path, rules.get("format"))
+        return rename_action(path, destination)
     elif action == "archive":
         return archive_action(path, destination)
     elif action == "move":

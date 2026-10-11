@@ -1,6 +1,10 @@
 # Download Manager CLI Python Script
 # Give config + watch folder
 import argparse
+import filter
+import action
+import config
+
 
 #this function will scan all the files in the base_dir and will skip the destination files
 def scan(base_dir: str, recursive: bool, skip_dir: list[str]) -> list[str]:

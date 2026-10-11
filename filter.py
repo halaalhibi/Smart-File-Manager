@@ -2,12 +2,14 @@
 # it will return a true ---> match, or false ---> doesn't match
 import platform
 
-def extension_filter(path, extension) -> bool:
-    if path.endswith(extension):
-        return True
-    else:
-        return False
+# basic function just checking for extensions.
+def extension_filter(path, extensions:list) -> bool:
+    for extension in extensions:
+        if path.endswith(extension):
+            return True
+    return False
 
+# this function will get the origin url supporting Windows, Linux, MacOS
 def get_origin_url(path: str) -> str:
     os_type = platform.system()
     # tested it works
@@ -29,6 +31,7 @@ def get_origin_url(path: str) -> str:
         return os.getxattr(path,"user.xdg.origin.url")
 
 
+# check if that file contains the URL
 def url_filter(path, url) -> bool:
     file_url = get_origin_url(path)
     if file_url.contains(url):
@@ -37,15 +40,19 @@ def url_filter(path, url) -> bool:
         return False
 
 
+#TODO: Make this
 def size_filter(path, size: int) -> bool:
     pass
 
+#TODO: Maket this
 def age_days_filter(path, age) -> bool:
     pass
 
+#TODO: Make this
 def name_filter(path, name) -> bool:
     pass
 
+# a mapper for functions with the json.
 MATCHERS = {
     "extension": extension_filter,
     "url": url_filter,
