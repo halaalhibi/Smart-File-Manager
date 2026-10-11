@@ -15,25 +15,36 @@ def extension_filter(path, extension) -> bool:
     return file_ext == str(extension).lstrip(".").lower()
 
 
-def get_origin_url(path):
-    """Attempts to read the download URL from file extended attributes."""
-    try:
-        if hasattr(os, "getxattr"):
-            url_bytes = os.getxattr(path, "user.xdg.origin.url")
-            return url_bytes.decode("utf-8")
-        return None
-    except (OSError, AttributeError):
-        return None
+# this function will get the origin url supporting Windows, Linux, MacOS
+def get_origin_url(path: str) -> str:
+    os_type = platform.system()
+    # tested it works
+    if os_type == "Windows":
+        try:
+            with open(paht + ":Zone.Identifier") as file:
+                url = file.read()
+            return (url.split()[2].split("=")[1].split("\x00")[0])
+        except FileNotFoundError:
+            return None
+    #only theoritical
+    elif os_type == "Darwin":
+        out = subprocess.run(
+            ["xattr", "-px", "com.apple.metadata:kMDItemWhereFroms", path],
+            capture_output=True, text=True, check=True,
+        ).stdout
+    #linux
+    else:
+        return os.getxattr(path,"user.xdg.origin.url")
 
 
+# check if that file contains the URL
 def url_filter(path, url) -> bool:
-    """Filters by matching download source URL."""
-    if not url or not isinstance(url, str):
+    file_url = get_origin_url(path)
+    if file_url.contains(url):
+        return True
+    else:
         return False
-    origin_url = get_origin_url(path)
-    if not origin_url:
-        return False
-    return url in origin_url
+
 
 
 def _parse_size_in_mb(val):
@@ -134,31 +145,20 @@ MATCHERS = {
 }
 
 
-def matches(path, conditions) -> bool:
-    """Checks if a file matches all given criteria in the 'when' block."""
-    if not isinstance(conditions, dict):
-        return False
-        
-    for key, value in conditions.items():
-        matcher = MATCHERS.get(key)
-        if not matcher:
-            continue
-        try:
-            if not matcher(path, value):
-                return False
-        except Exception:
+# this function will run the filter functions on the path.
+def matches(path, when):
+    for key, value in when.items():
+        # find the right function
+        check = MATCHERS[key]
+        # run it on the file
+        if not check(path, value):
             return False
     return True
 
-
+# this function will be used to pass the whole rule.
 def first_matching_rule(path, rules):
-    """Finds and returns the first rule whose conditions match the file."""
-    if not isinstance(rules, list):
-        return None
     for rule in rules:
-        if not isinstance(rule, dict):
-            continue
-        conditions = rule.get("when", {})
-        if matches(path, conditions):
+        if matches(path, rule["when"]):
             return rule
     return None
+
