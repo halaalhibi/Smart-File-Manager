@@ -56,14 +56,10 @@ def main():
         sys.exit(json_error)
     json_data = json.load(open(config_file))
     all_files = scan(base_dir, recursive, skip_dir=None)
-    #get all files in base_dir
-    for item in json_data['rules']:
-
-        # filter
-        for file in all_files:
-            rule = matchers.first_matching_rule(file, json_data["rules"])
-            if rule:
-                action.run_action(file, rule)
+    for file in all_files:
+        rule = matchers.first_matching_rule(file, json_data["rules"])
+        if rule:
+            action.run_action(file, rule)
 
 
 

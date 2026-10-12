@@ -45,7 +45,7 @@ def validate_json(json_path, json_error = "") -> tuple[bool,str]:
                             json_error = f'invalid value: {value}, inside of "when"'
                             return False, json_error
                         # if the filter is "size_mb" or "age_days" it should contain less than or more than
-                        if value == "size_mb" or value == "age_days" and isinstance(subvalues, dict):
+                        if value in ("size_mb", "age_days") and isinstance(subvalues, dict) :
                             if not ("greater_than" in subvalues or "less_than" in subvalues):
                                 json_error = f'"size_mb" and "age_days" shoud either contain "greater_than" or "less_than" keys'
                                 return False, json_error
