@@ -39,9 +39,6 @@ def scan(base_dir: str, recursive: bool, skip_dir: str) -> list[str]:
 
     return files
 
-
-
-
 # here the main logic will be
 def main():
     p = argparse.ArgumentParser(description="Organize files using a JSON rules file.")
