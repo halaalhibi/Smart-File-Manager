@@ -18,7 +18,7 @@ def resolve_path(path):
     return Path(path).expanduser().resolve()
 
 #this function will scan all the files in the base_dir and will skip the destination files
-def scan(base_dir: Path, recursive: bool, skip_dir: Path) -> list[str]:
+def scan(base_dir: Path, recursive: bool, skip_dir) -> list[str]:
     files = []
     base = Path(base_dir).resolve()
     skip = Path(skip_dir).resolve() if skip_dir else None
@@ -55,13 +55,13 @@ def main():
     if not ok:
         sys.exit(json_error)
     json_data = json.load(open(config_file))
-
+    all_files = scan(base_dir, recursive, skip_dir=None)
     #get all files in base_dir
     for item in json_data['rules']:
-        all_files = scan(base_dir, recursive, resolve_path(item.get("dest")))
+
         # filter
         for file in all_files:
-            rule = matchers.first_matching_rule(item, json_data["rules"])
+            rule = matchers.first_matching_rule(file, json_data["rules"])
             if rule:
                 action.run_action(file, rule)
 

@@ -10,6 +10,8 @@ import plistlib
 
 def extension_filter(path: str, extensions: list[str]) -> bool:
     """True if the file's extension is in the list (case-insensitive, no dot)."""
+    if isinstance(extensions, str):
+        extensions = [extensions]
     file_ext = Path(path).suffix.lstrip(".").lower()
     for ext in extensions:
         if file_ext == ext.lstrip(".").lower():

@@ -9,18 +9,17 @@ import os
 def archive_action(source, destination, format: str = "zip") -> bool:
     #get the date and format it as string
     now = datetime.now()
-    archive_name = now.strftime("%d-%b-%Y")
-
+    archive_name = f"{Path(source).stem}_{now.strftime("%d-%b-%Y")}"
     try:
         #make the archive
         archive_path = shutil.make_archive(archive_name, format, source)
         destination_path = Path(destination)
         #check that the destination file is a directory
         if not destination_path.exists():
-            destination_path.mkdir()
+            destination_path.mkdir(parents=True, exist_ok=True)
         else:
             if not destination_path.is_dir():
-                destination_path.mkdir()
+                destination_path.mkdir(parents=True, exist_ok=True)
         #move it with the new format
         shutil.move(archive_path, destination / f"{archive_name}.{format}")
         return True
@@ -35,10 +34,10 @@ def move_action(path, destination) -> bool:
     try:
         destination_path = Path(destination)
         if not destination_path.exists():
-            destination_path.mkdir()
+            destination_path.mkdir(parents=True, exist_ok=True)
         else:
             if not destination_path.is_dir():
-                destination_path.mkdir()
+                destination_path.mkdir(parents=True, exist_ok=True)
         shutil.move(path, destination)
         return True
     except:
@@ -72,7 +71,7 @@ def run_action (path, rules):
     if action == "rename":
         return rename_action(path, destination)
     elif action == "archive":
-        return archive_action(path, destination)
+        return archive_action(path, destination, rules.get("format", "zip"))
     elif action == "move":
         return move_action(path, destination)
     elif action == "remove":
