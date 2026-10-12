@@ -11,7 +11,22 @@ import os
 
 #this function will scan all the files in the base_dir and will skip the destination files
 def scan(base_dir: str, recursive: bool, skip_dir: str) -> list[str]:
-    pass
+    
+    files = []
+
+    if recursive:
+        paths = Path(base_dir).rglob("*")
+    else:
+        paths = Path(base_dir).iterdir()
+
+    for path in paths:
+        if path.is_file():
+            if skip_dir and Path(skip_dir).resolve() in path.resolve().parents:
+                continue
+            files.append(str(path))
+
+    return files
+
 
 # here the main logic will be
 def main():
