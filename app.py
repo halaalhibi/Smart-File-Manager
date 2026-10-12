@@ -13,30 +13,26 @@ import config
 
 #this will parse to get all dest folder
 def resolve_path(path):
+    if path is None:
+        return path
     return Path(path).expanduser().resolve()
 
 #this function will scan all the files in the base_dir and will skip the destination files
-def scan(base_dir: str, recursive: bool, skip_dir: str) -> list[str]:
+def scan(base_dir: Path, recursive: bool, skip_dir: Path) -> list[str]:
     files = []
-
     base = Path(base_dir).resolve()
     skip = Path(skip_dir).resolve() if skip_dir else None
-
     if not base.is_dir():
         return files
-
     if recursive:
         paths = base.rglob("*")
     else:
         paths = base.iterdir()
-
     for path in paths:
         if path.is_file():
             if skip and (path.resolve() == skip or skip in path.resolve().parents):
                 continue
-
             files.append(str(path))
-
     return files
 
 # here the main logic will be
@@ -62,14 +58,13 @@ def main():
 
     #get all files in base_dir
     for item in json_data['rules']:
-        all_files = scan(base_dir, recursive, item)
+        all_files = scan(base_dir, recursive, resolve_path(item.get("dest")))
         # filter
         for file in all_files:
-            for when in item['when'].items():
-                if matchers.matches(file, when):
-                    action.run_action(item['action'], item)
-                else:
-                    continue
+            rule = matchers.first_matching_rule(item, json_data["rules"])
+            if rule:
+                action.run_action(file, rule)
+
 
 
 

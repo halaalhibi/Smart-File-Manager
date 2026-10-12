@@ -2,6 +2,10 @@ import os
 import time
 from pathlib import Path
 import fnmatch
+import platform
+import subprocess
+import plistlib
+
 
 
 def extension_filter(path: str, extensions: list[str]) -> bool:
@@ -13,28 +17,38 @@ def extension_filter(path: str, extensions: list[str]) -> bool:
     return False
 
 # this function will get the origin url supporting Windows, Linux, MacOS
-def get_origin_url(path: str) -> str:
+def get_origin_url(path: str) :
     os_type = platform.system()
-    # tested it works
+    # Windows
     if os_type == "Windows":
         try:
-            with open(path + ":Zone.Identifier") as file:
-                url = file.read()
-            return (url.split()[2].split("=")[1].split("\x00")[0])
-        except FileNotFoundError:
-            return None
-    #only theoritical
+            with open(path + ":Zone.Identifier", 'r', encoding='utf-8') as file:
+                content = file.read().splitlines()
+            for key in ["HostUrl=", "ReferrerUrl="]:
+                for line in content:
+                    if line.startswith(key):
+                        return line.strip().removeprefix(key)
+        except OSError:
+            pass
+        return None
+    #Mac OS
     elif os_type == "Darwin":
-        out = subprocess.run(
-            ["xattr", "-px", "com.apple.metadata:kMDItemWhereFroms", path],
-            capture_output=True, text=True, check=True,
-        ).stdout
+        try:
+            hex_text = subprocess.run(
+                ["xattr", "-px", "com.apple.metadata:kMDItemWhereFroms", path],
+                capture_output=True, text=True, check=True,
+            ).stdout
+            return plistlib.loads(bytes.fromhex(hex_text))[0]
+        except Exception:
+            pass
+        return None
     #linux
     else:
         try:
             return os.getxattr(path,"user.xdg.origin.url").decode("utf-8")
         except:
-            return None
+            pass
+    return None
 
 
 # check if that file contains the URL
