@@ -66,7 +66,7 @@ def move_action(path, destination) -> bool:
         while target.exists():
             target = dest_dir / f"{src.stem}_{counter}{src.suffix}"
             counter += 1
-            shutil.move(src, target)
+        shutil.move(src, target)
         return True
     except OSError:
         return False
