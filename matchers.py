@@ -30,7 +30,7 @@ def get_origin_url(path: str) :
                 for line in content:
                     if line.startswith(key):
                         return line.strip().removeprefix(key)
-        except Exception:
+        except OSError:
             pass
         return None
     #Mac OS
@@ -41,7 +41,7 @@ def get_origin_url(path: str) :
                 capture_output=True, text=True, check=True,
             ).stdout
             return plistlib.loads(bytes.fromhex(hex_text))[0]
-        except OSError:
+        except Exception:
             return None
     #linux
     else:
