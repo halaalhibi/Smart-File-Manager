@@ -36,7 +36,7 @@ def archive_action(source, destination,format: str = "zip") -> bool:
         # mode="a" appends into existing tar, or mode="w" if new
             mode = "a" if archive_path.exists() else "w"
             with tarfile.open(archive_path, mode) as tf:
-                existing_files = tf.namelist()
+                existing_files = tf.getnames()
                 arch_name = src.name
                 counter = 1
                 while arch_name in existing_files:

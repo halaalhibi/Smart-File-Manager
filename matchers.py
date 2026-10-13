@@ -41,15 +41,14 @@ def get_origin_url(path: str) :
                 capture_output=True, text=True, check=True,
             ).stdout
             return plistlib.loads(bytes.fromhex(hex_text))[0]
-        except Exception:
-            pass
-        return None
+        except OSError:
+            return None
     #linux
     else:
         try:
             return os.getxattr(path,"user.xdg.origin.url").decode("utf-8")
-        except:
-            pass
+        except OSError:
+            return None
     return None
 
 
