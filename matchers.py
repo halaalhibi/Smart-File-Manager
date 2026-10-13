@@ -30,7 +30,7 @@ def get_origin_url(path: str) :
                 for line in content:
                     if line.startswith(key):
                         return line.strip().removeprefix(key)
-        except OSError:
+        except Exception:
             pass
         return None
     #Mac OS

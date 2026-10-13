@@ -95,7 +95,9 @@ def run_action (path, rules):
     destination = ""
     action = rules.get("action")
     if action in ["move", "archive"]:
-        destination = Path(rules.get("dest"))
+        # resolve to the destination file
+        dest = Path(rules.get("dest")).expanduser()
+        destination = dest if dest.is_absolute() else Path.home() / dest
     if action == "rename":
         return rename_action(path, destination)
     elif action == "archive":

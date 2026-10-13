@@ -54,7 +54,8 @@ def main():
     ok, json_error = config.validate_json(config_file)
     if not ok:
         sys.exit(json_error)
-    json_data = json.load(open(config_file))
+    with open(config_file, "r", encoding="utf-8") as file:
+        json_data = json.load(file)
     all_files = scan(base_dir, recursive, skip_dir=None)
     for file in all_files:
         rule = matchers.first_matching_rule(file, json_data["rules"])
