@@ -90,14 +90,16 @@ def rename_action(path, new_name) -> bool:
         return False
 
 # this function is responsible for running the action
-# TODO: Fix rename to make it work with the resulted format, probably make a function for that
-def run_action (path, rules):
+def run_action (path, rules, dry_run = False) -> bool:
     destination = ""
     action = rules.get("action")
     if action in ["move", "archive"]:
         # resolve to the destination file
         dest = Path(rules.get("dest")).expanduser()
         destination = dest if dest.is_absolute() else Path.home() / dest
+    if dry_run:
+        #TODO: Make dry run
+        pass
     if action == "rename":
         return rename_action(path, destination)
     elif action == "archive":
