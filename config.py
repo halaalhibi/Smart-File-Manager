@@ -3,7 +3,7 @@ import json
 #"action" should equal one of those in the given JSON.
 ACTIONS = ["move", "archive", "rename", "remove"]
 #"when" should equal one of those in the given JSON or multiple.
-FILTER  = ["url", "extension","size_mb", "age_days", "name"]
+FILTER  = ["url", "extension","size_mb", "age_days", "name","contains_text" ]
 #"format" should equal one of those in the give JSON.
 FORMATS = ["zip", "tar"]
 #those are the main key

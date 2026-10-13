@@ -152,12 +152,25 @@ def name_filter(path, name) -> bool:
     return fnmatch.fnmatch(filename, name)
 
 
+def contains_text_filter(path: str, text: str) -> bool:
+    """Check if a file contains specific text."""
+    if not isinstance(text, str) or not text:
+        return False
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return text.lower() in f.read().lower()
+    except (OSError, UnicodeDecodeError):
+        return False
+
+
 MATCHERS = {
     "extension": extension_filter,
     "size_mb": size_filter,
     "age_days": age_days_filter,
     "name": name_filter,
     "url": url_filter,
+    "contains_text": contains_text_filter,
 }
 
 
